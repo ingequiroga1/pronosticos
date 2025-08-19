@@ -1,0 +1,49 @@
+/* Contenedor que ocupa toda la pantalla y centra todo */
+.login-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centro vertical */
+  align-items: center;     /* Centro horizontal */
+  gap: 40px;
+}
+
+/* Logo */
+.app-icon {
+  width: 120px;
+  height: 120px;
+}
+
+/* Botón de Google */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 80%;
+  max-width: 320px;
+  transition: background 0.3s ease;
+}
+
+.google-btn:hover {
+  background-color: #357ae8;
+}
+
+.google-btn:disabled {
+  background-color: #a0c1f7;
+  cursor: not-allowed;
+}
+
+/* Icono de Google */
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
