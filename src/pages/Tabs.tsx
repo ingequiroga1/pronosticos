@@ -25,15 +25,15 @@ const Tabs: React.FC = () => {
         <IonTabBar slot="bottom">
           <IonTabButton tab="tab1" href="/tabs/tab1">
             <IonIcon aria-hidden="true" icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
+            <IonLabel>Home</IonLabel>
           </IonTabButton>
           <IonTabButton tab="tab2" href="/tabs/tab2">
             <IonIcon aria-hidden="true" icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
+            <IonLabel>Resultado</IonLabel>
           </IonTabButton>
           <IonTabButton tab="tab3" href="/tabs/tab3">
             <IonIcon aria-hidden="true" icon={square} />
-            <IonLabel>Tab 3</IonLabel>
+            <IonLabel>Posiciónes</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
