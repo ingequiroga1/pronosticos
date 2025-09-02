@@ -14,22 +14,27 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import "./Tab3.css";
+import { useAuth } from "../context/AuthContext";
+import { useEffect } from "react";
 
-type Usuario = {
-  nombre: string;
-  pronosticos: ("L" | "E" | "V")[];
-  aciertos: number;
-};
 
 const Tab3: React.FC = () => {
-  const usuarios: Usuario[] = [
-    { nombre: "Xime", pronosticos: ["L", "V", "E", "L"], aciertos: 3 },
-    { nombre: "Victor", pronosticos: ["E", "L", "L", "V"], aciertos: 2 },
-    { nombre: "Ana", pronosticos: ["V", "E", "L", "V"], aciertos: 1 },
-  ];
+    const { pronosticosConAciertos,fetchPronXJornada } = useAuth();
+
+
+   useEffect(() => {
+        async function fetchData() {
+          try {
+            fetchPronXJornada();
+          } catch (err) {
+            console.error("No se pudieron cargar las jornadas:", err);
+          }
+        }
+        fetchData();
+      }, []);
 
   // Ordenamos de mayor a menor aciertos
-  const posiciones = [...usuarios].sort((a, b) => b.aciertos - a.aciertos);
+  const posiciones = [...(pronosticosConAciertos ?? [])].sort((a, b) => b.aciertos - a.aciertos);
 
   return (
     <IonPage>

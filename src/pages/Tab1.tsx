@@ -15,10 +15,12 @@ import {
 } from "@ionic/react";
 import "./Tab1.css";
 import { useAuth } from "../context/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import PronosticoModal from "../components/PronosticoModal";
 
 const Tab1: React.FC = () => {
-  const { usuario, jornadas, fetchJornadas } = useAuth();
+  const { usuario, jornadas, fetchJornadas,fetchpartidosxjornada } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -30,6 +32,15 @@ const Tab1: React.FC = () => {
     }
     fetchData();
   }, []);
+
+  const onClicJornada = (idJornada: number) => {
+    try {
+      fetchpartidosxjornada(idJornada);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("No se pudieron cargar las jornadas:", error);
+    }
+  };
 
   return (
     <IonPage>
@@ -49,7 +60,7 @@ const Tab1: React.FC = () => {
             <IonCardTitle>Bienvenido</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
-            <h2>Bienvenido {usuario}</h2>
+            <h2>Bienvenido {usuario?.nombre}</h2>
             Aquí puedes ver las jornadas y sus estatus.
           </IonCardContent>
         </IonCard>
@@ -58,7 +69,11 @@ const Tab1: React.FC = () => {
             {/* Lista de jornadas */}
             <IonList>
               {jornadas.map((jornada, index) => (
-                <IonItem key={index}>
+                <IonItem 
+                key={index}
+                button={jornada.status === "Open"}
+                onClick={() => onClicJornada(jornada.idjornada)}
+                >
                   <IonLabel>
                     <h2>{jornada.nombre}</h2>
                     <p>Fecha fin: {jornada.fecha_fin}</p>
@@ -74,6 +89,10 @@ const Tab1: React.FC = () => {
             </IonList>
           </IonCardContent>
         </IonCard>
+         <PronosticoModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </IonContent>
     </IonPage>
   );

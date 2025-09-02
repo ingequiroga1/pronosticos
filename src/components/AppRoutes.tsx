@@ -17,8 +17,10 @@ const AppRoutes: React.FC = () => {
          async function fetchUser() {
          const responseuser = await checkSession(); 
            if (responseuser) {
+            //console.log(responseuser);
+            
              setUser(responseuser.id); // si ya devuelve el id, úsalo directo
-              login(responseuser.user_metadata.full_name); // usa el hook de login para establecer el usuario
+              login(responseuser.id, responseuser.user_metadata.full_name, responseuser.user_metadata.avatar_url); // usa el hook de login para establecer el usuario
             } 
             setLoading(false); 
          }

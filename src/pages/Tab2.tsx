@@ -19,10 +19,22 @@ import {
 import "./Tab2.css";
 import { useAuth } from "../context/AuthContext";
 import { logOutOutline } from "ionicons/icons";
+import { useEffect } from "react";
 
 
 const Tab2: React.FC = () => {
-  const { pronosticos,logout } = useAuth();
+  const { pronosticos,logout,fetchPronXUsuario } = useAuth();
+  useEffect(() => {
+      async function fetchData() {
+        try {
+          fetchPronXUsuario();
+        } catch (err) {
+          console.error("No se pudieron cargar las jornadas:", err);
+        }
+      }
+      fetchData();
+    }, []);
+  
   return (
     <IonPage>
       <IonHeader>
@@ -50,12 +62,12 @@ const Tab2: React.FC = () => {
             <IonCardContent>
               <IonList>
                 {jornada.partidos.map((partido, j) => {
-                  const acerto = partido.pronostico === partido.resultadoReal;
+                  const acerto = partido.pronostico === partido.resultado;
                   return (
                     <IonItem key={j} color={acerto ? "success" : undefined}>
                       <IonLabel>
                         <h2>
-                          {partido.local} vs {partido.visitante}
+                          {partido.equipo_local} vs {partido.equipo_visitante}
                         </h2>
                         <p>
                           Pronóstico:{" "}
@@ -70,7 +82,7 @@ const Tab2: React.FC = () => {
                         slot="end"
                         color={acerto ? "light" : "tertiary"}
                       >
-                        {partido.resultadoReal}
+                        {partido.resultado}
                       </IonBadge>
                     </IonItem>
                   );
