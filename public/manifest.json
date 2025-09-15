@@ -1,6 +1,6 @@
 {
-  "short_name": "Ionic App",
-  "name": "My Ionic App",
+  "short_name": "Pronostify",
+  "name": "My App de Pronósticos Deportivos",
   "icons": [
     {
       "src": "assets/icon/favicon.png",
@@ -8,10 +8,19 @@
       "type": "image/x-icon"
     },
     {
-      "src": "assets/icon/icon.png",
+      "src": "assets/icons/icon-72x72.png",
       "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "maskable"
+      "sizes": "72x72"
+    },
+     {
+      "src": "assets/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+     {
+      "src": "assets/icon/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",

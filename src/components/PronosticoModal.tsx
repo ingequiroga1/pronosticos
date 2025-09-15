@@ -16,10 +16,12 @@ import {
   IonCard,
   IonCardTitle,
   IonCardContent,
+  IonListHeader,
 } from "@ionic/react";
 import { useAuth } from "../context/AuthContext";
 import { Partido } from "../api/partidos";
 import { PetPronostico } from "../types/pronosticos";
+
 
 interface PronosticoModalProps {
   isOpen: boolean;
@@ -30,7 +32,8 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { usuario, idJornadaActual, partidosxjornada,guardarPronostico } = useAuth();
+  const { usuario, idJornadaActual, partidosxjornada, guardarPronostico } =
+    useAuth();
   const [pronosticos, setPronosticos] = useState<{ [id: number]: string }>({});
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [pronosticoUsuario, setPronosticoUsuario] = useState<PetPronostico>({
@@ -52,6 +55,13 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
   };
 
   const handleEnviar = () => {
+    const tieneVacios =
+      (partidosxjornada?.length ?? 0) !== Object.keys(pronosticos).length;
+    if (tieneVacios) {
+      alert("Por favor, completa todos los pronósticos antes de enviar.");
+      return;
+    }
+
     const arrpronosticos = Object.entries(pronosticos).map(([key, value]) => ({
       idpartido: Number(key),
       pronostico: value,
@@ -66,7 +76,7 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
   };
 
   const handleConfirmarEnvio = () => {
-    guardarPronostico(pronosticoUsuario) 
+    guardarPronostico(pronosticoUsuario);
     console.log("Enviando pronósticos:", pronosticoUsuario);
   };
 
@@ -82,53 +92,114 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
           <IonCardHeader>
             <IonCardTitle>Pronostico</IonCardTitle>
           </IonCardHeader>
-          <IonCardContent>
-            <IonList>
-              {partidosxjornada &&
-                partidosxjornada.map((partido: Partido) => (
-                  <IonItem key={partido.idpartido}>
-                    <IonLabel>
-                      {partido.equipo_local} vs {partido.equipo_visitante}
+          {partidosxjornada && partidosxjornada.length > 0 ? (
+            <IonCardContent>
+              <IonList>
+                {/* Encabezado */}
+                <IonListHeader>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <IonLabel style={{ flex: 1, textAlign: "left" }}>
+                      Local
                     </IonLabel>
-                    <IonSelect
-                      value={pronosticos[partido.idpartido] || ""}
-                      placeholder="Selecciona"
-                      onIonChange={(e) =>
-                        handlePronosticoChange(
-                          partido.idpartido,
-                          e.detail.value
-                        )
-                      }
-                    >
-                      <IonSelectOption value="L">L</IonSelectOption>
-                      <IonSelectOption value="E">E</IonSelectOption>
-                      <IonSelectOption value="V">V</IonSelectOption>
-                    </IonSelect>
-                  </IonItem>
-                ))}
-            </IonList>
-            <IonButton expand="block" onClick={handleEnviar}>
-              Enviar Pronóstico
-            </IonButton>
-            <IonButton expand="block" onClick={handleCerrar}>
-              Cancelar
-            </IonButton>
-          </IonCardContent>
+
+                   
+
+                    <IonLabel style={{ flex: 1, textAlign: "right" }}>
+                      Visitante
+                    </IonLabel>
+                  </div>
+                </IonListHeader>
+
+                {/* Lista de partidos */}
+                {partidosxjornada &&
+                  partidosxjornada.map((partido: Partido) => (
+                    <IonItem key={partido.idpartido}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          width: "100%",
+                        }}
+                      >
+                        {/* Equipo Local */}
+                        <IonLabel style={{ flex: 1, textAlign: "left" }}>
+                          {partido.equipo_local}
+                        </IonLabel>
+
+                        {/* Select centrado */}
+                        <IonSelect
+                          value={pronosticos[partido.idpartido] || ""}
+                          placeholder="Selecciona"
+                          onIonChange={(e) =>
+                            handlePronosticoChange(
+                              partido.idpartido,
+                              e.detail.value
+                            )
+                          }
+                          style={{ flex: 1, textAlign: "center" }}
+                        >
+                          <IonSelectOption value="L">Local</IonSelectOption>
+                          <IonSelectOption value="E">Empate</IonSelectOption>
+                          <IonSelectOption value="V">Visitante</IonSelectOption>
+                        </IonSelect>
+
+                        {/* Equipo Visitante */}
+                        <IonLabel style={{ flex: 1, textAlign: "right" }}>
+                          {partido.equipo_visitante}
+                        </IonLabel>
+                      </div>
+                    </IonItem>
+                  ))}
+              </IonList>
+
+              <div  style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          width: "100%",
+                        }}>
+                <IonButton color="success" shape="round" style={{ flex: 1}} onClick={handleEnviar}>Enviar</IonButton>
+                <IonButton color="danger" shape="round"  style={{ flex: 1}} onClick={handleCerrar}>Cancelar</IonButton>
+              </div>
+            </IonCardContent>
+          ) : (
+            <IonCardContent>
+              <p>✅ Ya registraste tu pronóstico de esta jornada.</p>
+              <IonButton expand="block" onClick={handleCerrar}>
+                Salir
+              </IonButton>
+            </IonCardContent>
+          )}
         </IonCard>
         <IonAlert
           isOpen={isOpenAlert}
-          header="Confirmación"
-          message="Una vez enviados los pronósticos, no podrás modificarlos."
+          header="⚽ Confirmación de pronóstico"
+          message={`
+    📌 Una vez enviados los pronósticos, no podrás modificarlos.
+    💰 Recuerda que tu pronóstico debe estar pagado.
+    ✅ Solo los pronósticos pagados serán válidos.
+  `}
           buttons={[
             {
-              text: "Cancelar",
+              text: "❌ Cancelar",
               role: "cancel",
+              cssClass: "alert-button-cancel",
               handler: () => {
                 setIsOpenAlert(false);
               },
             },
             {
-              text: "Enviar",
+              text: "🚀 Enviar",
+              cssClass: "alert-button-confirm",
               handler: () => {
                 handleConfirmarEnvio();
                 setIsOpenAlert(false);
@@ -137,7 +208,7 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
             },
           ]}
           onDidDismiss={() => setIsOpenAlert(false)}
-        ></IonAlert>
+        />
       </IonContent>
     </IonModal>
   );

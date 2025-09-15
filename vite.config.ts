@@ -20,9 +20,19 @@ export default defineConfig({
         theme_color: "#3880ff",
         icons: [
           {
-            src: "icons/icon-72x72.png",
+            src: "/icon-72x72.png",
             sizes: "72x72",
             type: "image/png",
+          },
+           {
+            src: '/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',            
+          },
+          {
+            src: '/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',  
           },
           // Agrega más tamaños (192x192, 512x512, etc.)
         ],

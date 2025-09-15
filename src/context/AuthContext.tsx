@@ -1,9 +1,12 @@
-import React, { createContext, useState, ReactNode, useContext } from "react";
+import React, { createContext, useState, ReactNode, useContext} from "react";
 import { signOut } from "../api/auth";
 import { getJornadas } from "../api/jornadas";
 import { getPartidosxJornada } from "../api/partidos";
 import { PetPronostico } from "../types/pronosticos";
 import { enviarPronostico, getPronosticosJornada, getPronXUsuario } from "../api/pronosticos";
+
+
+
 
 export type Jornada = {
   idjornada: number;
@@ -48,18 +51,22 @@ type pronosticoPartido = {
   equipo_local: string;
   equipo_visitante: string;
   pronostico: "L" | "E" | "V";
-  resultado: "L" | "E" | "V";
+  resultado: "L" | "E" | "V"| " ";
   acertado: boolean;
+  fecha?: string;
+  status?: "Open" | "Closed" | "Started";
 };
 
 type pronostico = {
   nombre: string;
+  idpronostico: number;
+  espagado: boolean;
   partidos: pronosticoPartido[];
 };
 
 type pronosticoUsuario = {
   nombre: string;
-  pronosticos: string[];
+  pronosticos: {pronostico: string, acierto: boolean}[];
   aciertos: number;
 };
 
@@ -69,6 +76,9 @@ type pronosticoUsuario = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+ 
+
+
   const [usuario, setUser] = useState<Usuario | null>(null);
   const [jornadas, setJornadas] = useState<Jornada[]>([]);
   const [idJornadaActual, setIdJornadaActual] = useState<number | undefined>(
@@ -106,9 +116,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchpartidosxjornada = async (idJornada: number) => {
     setIdJornadaActual(idJornada);
-    const data = await getPartidosxJornada(idJornada);
+    if (!usuario) {
+      console.error("Usuario no definido");
+      setPartidosxjornada([]);
+      return;
+    }
+    const data = await getPartidosxJornada(idJornada, usuario.id);
     setPartidosxjornada(data);
-    console.log("Partidos de la jornada:", data);
+    //console.log("Partidos de la jornada:", data);
   };
 
   const fetchUser = async () => {
@@ -138,7 +153,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchPronXJornada = async () => {
       const data = await getPronosticosJornada();
       setPronosticosConAciertos(data);
-      console.log("Pronósticos con aciertos:", data);
+      //console.log("Pronósticos con aciertos:", data);
   }
 
 

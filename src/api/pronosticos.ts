@@ -11,15 +11,16 @@ type pronosticoPartido = {
 
 type pronostico = {
   nombre: string;
+  idpronostico: number;
+  espagado: boolean;
   partidos: pronosticoPartido[];
 };
 
 type pronosticoUsuario = {
   nombre: string;
-  pronosticos: string[];
+  pronosticos: {pronostico: string, acierto: boolean}[];
   aciertos: number;
 };
-
 
 
 export async function enviarPronostico(
@@ -51,13 +52,16 @@ export async function getPronXUsuario(idusuario: string): Promise<pronostico> {
       pronosticos!inner (
         idpronostico,
         auth_user_id,
+        espagado,
         pronosticos_det (
           pronostico,
           partidos (
             idpartido,
             equipo_local,
             equipo_visitante,
-            resultado
+            resultado,
+            fecha,
+            status
           )
         )
       )
@@ -81,12 +85,19 @@ export async function getPronXUsuario(idusuario: string): Promise<pronostico> {
         pronostico: prd.pronostico,
         resultado: prd.partidos?.resultado,
         acertado: prd.partidos?.resultado === prd.pronostico,
+        fecha: prd.partidos?.fecha,
+        status: prd.partidos?.status,
       }))
     )
   );
 
+  //console.log("data",data);
+  
+
   const pronostico: pronostico = {
     nombre: data[0]?.nombre || "",
+      idpronostico: data[0]?.pronosticos[0]?.idpronostico || 0,
+      espagado: data[0]?.pronosticos[0]?.espagado || false,
     partidos: result,
   };
   return pronostico;

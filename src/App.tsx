@@ -1,3 +1,4 @@
+import "./styles/styles.css";
 import { IonApp, setupIonicReact } from "@ionic/react";
 
 /* Core CSS required for Ionic components to work properly */
@@ -33,8 +34,6 @@ import "./theme/variables.css";
 
 import { AuthProvider} from "./context/AuthContext";
 import AppRoutes from "./components/AppRoutes";
-
-
 
 
 setupIonicReact();

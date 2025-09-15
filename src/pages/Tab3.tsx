@@ -1,25 +1,33 @@
 import {
   IonBadge,
+  IonButton,
+  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
   IonContent,
   IonHeader,
+  IonIcon,
   IonItem,
   IonLabel,
   IonList,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
+import { logOutOutline } from "ionicons/icons";
+import { useHistory } from "react-router";
 
 
 const Tab3: React.FC = () => {
-    const { pronosticosConAciertos,fetchPronXJornada } = useAuth();
+    const { pronosticosConAciertos,logout,fetchPronXJornada } = useAuth();
+    const history = useHistory();
 
 
    useEffect(() => {
@@ -36,11 +44,36 @@ const Tab3: React.FC = () => {
   // Ordenamos de mayor a menor aciertos
   const posiciones = [...(pronosticosConAciertos ?? [])].sort((a, b) => b.aciertos - a.aciertos);
 
+  const loadItems = async () => {
+    try {
+      await fetchPronXJornada();
+    } catch (err) {
+      console.error("No se pudieron recargar los resultados:", err);
+    }
+    
+  };
+
+
+  const handleRefresh = async (event: CustomEvent) => {
+    await loadItems();
+    (event.target as HTMLIonRefresherElement).complete(); // 👈 indica que terminó
+  };
+
+   const handleLogout = async () => {
+    logout();
+    history.replace("/login"); // 👈 aquí rediriges
+  };
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Posición</IonTitle>
+          <IonButtons slot="end">
+                      <IonButton onClick={handleLogout}>
+                        <IonIcon icon={logOutOutline} />
+                      </IonButton>
+                    </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -49,6 +82,12 @@ const Tab3: React.FC = () => {
             <IonTitle size="large">Posición</IonTitle>
           </IonToolbar>
         </IonHeader>
+         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent
+            pullingText="Desliza para actualizar"
+            refreshingSpinner="circles"
+          />
+        </IonRefresher>
         <IonCard>
           <IonCardHeader>
             <IonCardTitle>Tabla de Posiciones</IonCardTitle>
@@ -70,10 +109,10 @@ const Tab3: React.FC = () => {
                       {usuario.pronosticos.map((p, i) => (
                         <IonBadge
                           key={i}
-                          color="medium"
+                          color={p.acierto ? "success" : "medium"}
                           style={{ marginRight: 4 }}
                         >
-                          {p}
+                          {p.pronostico} 
                         </IonBadge>
                       ))}
                     </p>

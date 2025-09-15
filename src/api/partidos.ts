@@ -10,12 +10,18 @@ export type Partido = {
 };
 
 
-export async function getPartidosxJornada(idjornada:number): Promise<Partido[]> {
+export async function getPartidosxJornada(idjornada:number,idusuario:string): Promise<Partido[]> {
+
   const { data, error } = await supabase
-    .from("partidos")   // 👈 nombre de la tabla en tu BD
-    .select("*")
-    .eq("jornadas_idjornada", idjornada) 
-    .order("fecha", { ascending: true });
+  .rpc("partidos_sin_pronostico", { uid: idusuario });
+
+  // const { data, error } = await supabase
+  // .from("partidos")
+  // .select("*, pronosticos!left(idpronostico)")
+  // .is("pronosticos.idpronostico", null) // solo los partidos sin pronóstico
+  // .eq("jornadas_idjornada", idjornada)
+  // .order("fecha", { ascending: true });
+
 
   if (error) {
     console.error("Error obteniendo partidos de jornada:", error.message);

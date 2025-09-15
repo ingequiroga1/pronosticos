@@ -1,15 +1,20 @@
 import {
+  IonAlert,
   IonBadge,
+  IonButton,
+  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
   IonContent,
   IonHeader,
+  IonIcon,
   IonItem,
   IonLabel,
   IonList,
   IonPage,
+  IonText,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
@@ -17,10 +22,16 @@ import "./Tab1.css";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import PronosticoModal from "../components/PronosticoModal";
+import ModalReglas from "../components/modalReglas";
+import { logOutOutline } from "ionicons/icons";
+import { useHistory } from "react-router";
 
 const Tab1: React.FC = () => {
-  const { usuario, jornadas, fetchJornadas,fetchpartidosxjornada } = useAuth();
+  const { usuario, jornadas,logout, fetchJornadas, fetchpartidosxjornada } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reglasOpen, setReglasOpen] = useState(false);
+  const [isOpenAlert, setIsOpenAlert] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     async function fetchData() {
@@ -33,20 +44,41 @@ const Tab1: React.FC = () => {
     fetchData();
   }, []);
 
-  const onClicJornada = (idJornada: number) => {
+  const onClicJornada = async (idJornada: number,fechaIni: string) => {
+    const fechaActual = new Date();
+    const fechaInicioJornada = new Date(fechaIni);
+    if (fechaActual > fechaInicioJornada) {
+      setIsOpenAlert(true);
+      return;
+    }
+    
     try {
-      fetchpartidosxjornada(idJornada);
+      await fetchpartidosxjornada(idJornada);
       setIsModalOpen(true);
     } catch (error) {
       console.error("No se pudieron cargar las jornadas:", error);
     }
   };
 
+  const mostrarReglas = () => {
+    setReglasOpen(true);
+  };
+
+    const handleLogout = async () => {
+    logout();
+    history.replace("/login"); // 👈 aquí rediriges
+  };
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Home</IonTitle>
+          <IonTitle color="cancha">Home</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={handleLogout}>
+              <IonIcon icon={logOutOutline} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -55,13 +87,20 @@ const Tab1: React.FC = () => {
             <IonTitle size="large">Home</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonCard>
+        <IonCard className="ion-padding custom-card">
           <IonCardHeader>
-            <IonCardTitle>Bienvenido</IonCardTitle>
+            <IonCardTitle>Bienvenido {usuario?.nombre}</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
-            <h2>Bienvenido {usuario?.nombre}</h2>
-            Aquí puedes ver las jornadas y sus estatus.
+            <IonText color="dark">
+              <h2 style={{ fontWeight: "600", fontSize: "1.1rem" }}>
+                ⚽️ ¡Hora de participar! 🎉
+              </h2>
+              <p style={{ marginTop: "8px", fontSize: "0.95rem" }}>
+                Selecciona la <strong>jornada</strong> que prefieras y envía tu
+                pronóstico 📝. ¡Cada jugada puede acercarte a la victoria 🏆!
+              </p>
+            </IonText>
           </IonCardContent>
         </IonCard>
         <IonCard>
@@ -69,14 +108,14 @@ const Tab1: React.FC = () => {
             {/* Lista de jornadas */}
             <IonList>
               {jornadas.map((jornada, index) => (
-                <IonItem 
-                key={index}
-                button={jornada.status === "Open"}
-                onClick={() => onClicJornada(jornada.idjornada)}
+                <IonItem
+                  key={index}
+                  button={jornada.status === "Open"}
+                  onClick={() => onClicJornada(jornada.idjornada,jornada.fecha_inicio)}
                 >
                   <IonLabel>
                     <h2>{jornada.nombre}</h2>
-                    <p>Fecha fin: {jornada.fecha_fin}</p>
+                    <p>Fecha inicio: {jornada.fecha_inicio}</p>
                   </IonLabel>
                   {/* Estatus como badge */}
                   <IonBadge
@@ -89,10 +128,40 @@ const Tab1: React.FC = () => {
             </IonList>
           </IonCardContent>
         </IonCard>
-         <PronosticoModal 
+        <IonCard>
+          <IonCardContent>
+            <IonButton
+              expand="block"
+              shape="round"
+              className="ion-margin-top custom-boton"
+              onClick={mostrarReglas}
+            >
+              Reglas de la jornada
+            </IonButton>
+          </IonCardContent>
+        </IonCard>
+        <PronosticoModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
         />
+        <ModalReglas isOpen={reglasOpen} onClose={() => setReglasOpen(false)} />
+             <IonAlert
+                  isOpen={isOpenAlert}
+                  header="⚽ La jornada ya inició"
+                  message={`
+                  Lo sentimos, la jornada seleccionada ya ha iniciado y no puedes enviar pronósticos.
+          `}
+                  buttons={[
+                    {
+                      text: "Aceptar",
+                      cssClass: "alert-button-confirm",
+                      handler: () => {
+                        setIsOpenAlert(false);
+                      },
+                    },
+                  ]}
+                  onDidDismiss={() => setIsOpenAlert(false)}
+                />
       </IonContent>
     </IonPage>
   );
