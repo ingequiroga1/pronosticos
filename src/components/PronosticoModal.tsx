@@ -137,6 +137,7 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
 
                         {/* Select centrado */}
                         <IonSelect
+                        interface="popover"
                           value={pronosticos[partido.idpartido] || ""}
                           placeholder="Selecciona"
                           onIonChange={(e) =>

@@ -10,10 +10,14 @@ export type Partido = {
 };
 
 
-export async function getPartidosxJornada(idjornada:number,idusuario:string): Promise<Partido[]> {
+export async function 
+
+
+
+getPartidosxJornada(idjornada:number,idusuario:string): Promise<Partido[]> {
 
   const { data, error } = await supabase
-  .rpc("partidos_sin_pronostico", { uid: idusuario });
+  .rpc("partidos_sin_pronostico", { uid: idusuario, idjornada: idjornada });
 
   // const { data, error } = await supabase
   // .from("partidos")
