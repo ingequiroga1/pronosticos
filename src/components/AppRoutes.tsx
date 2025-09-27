@@ -36,7 +36,7 @@ return (
     <IonReactRouter>
         <Route exact path="/login" component={Login} />
         <Route path="/tabs">
-          <AuthGuard isAuthenticated={!!  user}>
+          <AuthGuard isAuthenticated={!!user}>
             <Tabs />
           </AuthGuard>
         </Route>

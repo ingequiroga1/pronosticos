@@ -186,7 +186,7 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
           header="⚽ Confirmación de pronóstico"
           message={`
     📌 Una vez enviados los pronósticos, no podrás modificarlos.
-    💰 Recuerda que tu pronóstico debe estar pagado.
+    💰 Recuerda que tu pronóstico debe estar pagado o no aparecera tu nombre en la lista.
     ✅ Solo los pronósticos pagados serán válidos.
   `}
           buttons={[

@@ -1,4 +1,5 @@
 import {
+  IonAlert,
   IonBadge,
   IonButton,
   IonButtons,
@@ -30,13 +31,15 @@ const Tab2: React.FC = () => {
   const { pronosticos, logout, fetchPronXUsuario } = useAuth();
 
   const [showModal, setShowModal] = useState(false);
+  const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [id, setId] = useState(0);
   const history = useHistory();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        fetchPronXUsuario();
+        await fetchPronXUsuario();
+        
       } catch (err) {
         console.error("No se pudieron cargar los pronosticos:", err);
       }
@@ -58,8 +61,10 @@ const Tab2: React.FC = () => {
   };
 
   const mostrarInstruccionesPago = (idpronostico: number) => {
-    console.log("ID Pronóstico para pago:", idpronostico);
-
+    if (pronosticos && new Date(pronosticos[0]?.fecha_inicio || "") < new Date()){
+      setIsOpenAlert(true);
+      return;
+    }
     setId(idpronostico);
     setShowModal(true);
   };
@@ -99,6 +104,7 @@ const Tab2: React.FC = () => {
             <IonCard key={i}>
               <IonCardHeader>
                 <IonCardTitle>{jornada.nombre}</IonCardTitle>
+
               </IonCardHeader>
               <IonCardContent>
                 {!jornada.espagado && (
@@ -198,6 +204,23 @@ const Tab2: React.FC = () => {
           idpronostico={id}
           onClose={() => setShowModal(false)}
         />
+        <IonAlert
+                          isOpen={isOpenAlert}
+                          header="⚽ La jornada ya inició"
+                          message={`
+                          Lo sentimos, la jornada seleccionada ya ha iniciado y no puedes realizar el pago.
+                  `}
+                          buttons={[
+                            {
+                              text: "Aceptar",
+                              cssClass: "alert-button-confirm",
+                              handler: () => {
+                                setIsOpenAlert(false);
+                              },
+                            },
+                          ]}
+                          onDidDismiss={() => setIsOpenAlert(false)}
+                        />
       </IonContent>
     </IonPage>
   );

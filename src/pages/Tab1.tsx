@@ -1,6 +1,5 @@
 import {
   IonAlert,
-  IonBadge,
   IonButton,
   IonButtons,
   IonCard,
@@ -23,11 +22,12 @@ import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import PronosticoModal from "../components/PronosticoModal";
 import ModalReglas from "../components/modalReglas";
-import { logOutOutline } from "ionicons/icons";
+import { addCircleOutline, logOutOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
 
 const Tab1: React.FC = () => {
-  const { usuario, jornadas,logout, fetchJornadas, fetchpartidosxjornada } = useAuth();
+  const { usuario, jornadas, logout, fetchJornadas, fetchpartidosxjornada } =
+    useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reglasOpen, setReglasOpen] = useState(false);
   const [isOpenAlert, setIsOpenAlert] = useState(false);
@@ -44,14 +44,14 @@ const Tab1: React.FC = () => {
     fetchData();
   }, []);
 
-  const onClicJornada = async (idJornada: number,fechaIni: string) => {
+  const onClicJornada = async (idJornada: number, fechaIni: string) => {
     const fechaActual = new Date();
     const fechaInicioJornada = new Date(fechaIni);
     if (fechaActual > fechaInicioJornada) {
       setIsOpenAlert(true);
       return;
     }
-    
+
     try {
       await fetchpartidosxjornada(idJornada);
       setIsModalOpen(true);
@@ -64,7 +64,7 @@ const Tab1: React.FC = () => {
     setReglasOpen(true);
   };
 
-    const handleLogout = async () => {
+  const handleLogout = async () => {
     logout();
     history.replace("/login"); // 👈 aquí rediriges
   };
@@ -111,18 +111,26 @@ const Tab1: React.FC = () => {
                 <IonItem
                   key={index}
                   button={jornada.status === "Open"}
-                  onClick={() => onClicJornada(jornada.idjornada,jornada.fecha_inicio)}
+                  onClick={() =>
+                    onClicJornada(jornada.idjornada, jornada.fecha_inicio)
+                  }
                 >
                   <IonLabel>
                     <h2>{jornada.nombre}</h2>
                     <p>Fecha inicio: {jornada.fecha_inicio}</p>
                   </IonLabel>
                   {/* Estatus como badge */}
-                  <IonBadge
-                    color={jornada.status === "Open" ? "success" : "primary"}
-                  >
-                    {jornada.status}
-                  </IonBadge>
+                  {jornada.status === "Open" ? (
+                    <IonIcon
+                      icon={addCircleOutline}
+                      color="success"
+                      style={{ fontSize: "24px" }}
+                    />
+                  ) : (
+                    <div style={{ color: "var(--ion-color-medium)" }}>
+                      {jornada.status}
+                    </div>
+                  )}
                 </IonItem>
               ))}
             </IonList>
@@ -145,23 +153,23 @@ const Tab1: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
         />
         <ModalReglas isOpen={reglasOpen} onClose={() => setReglasOpen(false)} />
-             <IonAlert
-                  isOpen={isOpenAlert}
-                  header="⚽ La jornada ya inició"
-                  message={`
+        <IonAlert
+          isOpen={isOpenAlert}
+          header="⚽ La jornada ya inició"
+          message={`
                   Lo sentimos, la jornada seleccionada ya ha iniciado y no puedes enviar pronósticos.
           `}
-                  buttons={[
-                    {
-                      text: "Aceptar",
-                      cssClass: "alert-button-confirm",
-                      handler: () => {
-                        setIsOpenAlert(false);
-                      },
-                    },
-                  ]}
-                  onDidDismiss={() => setIsOpenAlert(false)}
-                />
+          buttons={[
+            {
+              text: "Aceptar",
+              cssClass: "alert-button-confirm",
+              handler: () => {
+                setIsOpenAlert(false);
+              },
+            },
+          ]}
+          onDidDismiss={() => setIsOpenAlert(false)}
+        />
       </IonContent>
     </IonPage>
   );

@@ -11,6 +11,7 @@ type pronosticoPartido = {
 
 type pronostico = {
   nombre: string;
+  fecha_inicio?: string;
   idpronostico: number;
   espagado: boolean;
   partidos: pronosticoPartido[];
@@ -26,6 +27,8 @@ type pronosticoUsuario = {
 export async function enviarPronostico(
   peticion: PetPronostico
 ): Promise<boolean> {
+  console.log("peticion", peticion);
+  
   const response = await supabase.rpc("insertar_pronostico", {
     p_idusuario: peticion.idusuario,
     p_idjornada: peticion.idjornada,
@@ -49,6 +52,7 @@ export async function getPronXUsuario(idusuario: string): Promise<pronostico> {
       `
       nombre,
       status,
+      fecha_inicio,
       pronosticos!inner (
         idpronostico,
         auth_user_id,
@@ -96,6 +100,7 @@ export async function getPronXUsuario(idusuario: string): Promise<pronostico> {
 
   const pronostico: pronostico = {
     nombre: data[0]?.nombre || "",
+    fecha_inicio: data[0]?.fecha_inicio || "",
       idpronostico: data[0]?.pronosticos[0]?.idpronostico || 0,
       espagado: data[0]?.pronosticos[0]?.espagado || false,
     partidos: result,

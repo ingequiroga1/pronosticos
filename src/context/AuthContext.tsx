@@ -43,7 +43,7 @@ type AuthContextType = {
   fetchJornadas: () => Promise<void>;
   fetchpartidosxjornada: (idJornada: number) => Promise<void>;
   guardarPronostico: (pronostico: PetPronostico) => Promise<void>;
-  fetchPronXUsuario: () => Promise<void>;
+  fetchPronXUsuario: () => Promise<pronostico[] | undefined>;
   fetchPronXJornada: () => Promise<void>;
 };
 
@@ -59,6 +59,7 @@ type pronosticoPartido = {
 
 type pronostico = {
   nombre: string;
+  fecha_inicio?: string;
   idpronostico: number;
   espagado: boolean;
   partidos: pronosticoPartido[];
@@ -144,7 +145,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (usuario?.id !== undefined) {
       const data = await getPronXUsuario(usuario.id);
       setPronosticos([data]);
-      console.log("Pronósticos del usuario:", data);
+      return [data];
+      //console.log("Pronósticos del usuario:", data);
     } else {
       console.error("Usuario o idJornadaActual no definido");
     }
