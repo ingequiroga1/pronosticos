@@ -77,7 +77,7 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
 
   const handleConfirmarEnvio = () => {
     guardarPronostico(pronosticoUsuario);
-    console.log("Enviando pronósticos:", pronosticoUsuario);
+    setPronosticos({});
   };
 
   return (

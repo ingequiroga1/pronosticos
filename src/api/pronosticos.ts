@@ -29,6 +29,7 @@ type pronosticoUsuario = {
   nombre: string;
   pronosticos: {pronostico: string, acierto: boolean}[];
   aciertos: number;
+  vecescampeon: number;
 };
 
 

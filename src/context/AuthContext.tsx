@@ -144,7 +144,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchPronXUsuario = async () => {
     if (usuario?.id !== undefined) {
       const data = await getPronXUsuario(usuario.id);
-      console.log("Pronósticos del usuario:", data);
       setPronosticos([data]);
       return [data];
       
@@ -156,7 +155,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchPronXJornada = async () => {
       const data = await getPronosticosJornada();
       setPronosticosConAciertos(data);
-      console.log("Pronósticos con aciertos:", data);
   }
 
 
