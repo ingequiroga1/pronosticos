@@ -10,13 +10,10 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonItem,
-  IonLabel,
   IonList,
   IonPage,
   IonRefresher,
   IonRefresherContent,
-  IonSpinner,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
@@ -26,6 +23,7 @@ import { logOutOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import ModalPago from "../components/pagoModal";
 import { useHistory } from "react-router";
+import PartidoComponent from "../components/partidoComponent";
 
 const Tab2: React.FC = () => {
   const { pronosticos, logout, fetchPronXUsuario } = useAuth();
@@ -39,7 +37,6 @@ const Tab2: React.FC = () => {
     async function fetchData() {
       try {
         await fetchPronXUsuario();
-        
       } catch (err) {
         console.error("No se pudieron cargar los pronosticos:", err);
       }
@@ -57,29 +54,28 @@ const Tab2: React.FC = () => {
 
   const handleRefresh = async (event: CustomEvent) => {
     await loadItems();
-    (event.target as HTMLIonRefresherElement).complete(); // 👈 indica que terminó
+    (event.target as HTMLIonRefresherElement).complete();
   };
 
-  const mostrarInstruccionesPago = (idpronostico: number) => {
-    if (pronosticos && new Date(pronosticos[0]?.fecha_inicio || "") < new Date()){
-      setIsOpenAlert(true);
+  const mostrarInstruccionesPago = (idpronostico: number, espagado: boolean) => {
+    if (espagado) {
+      setId(idpronostico);
+      setShowModal(true);
       return;
     }
-    setId(idpronostico);
-    setShowModal(true);
+    setIsOpenAlert(true);
   };
 
   const handleLogout = async () => {
     logout();
-    history.replace("/login"); // 👈 aquí rediriges
+    history.replace("/login");
   };
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Pronostico</IonTitle>
-          {/* Botón de logout en la esquina derecha */}
+          <IonTitle>Pronósticos</IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={handleLogout}>
               <IonIcon icon={logOutOutline} />
@@ -87,6 +83,7 @@ const Tab2: React.FC = () => {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
+
       <IonContent fullscreen>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent
@@ -94,133 +91,131 @@ const Tab2: React.FC = () => {
             refreshingSpinner="circles"
           />
         </IonRefresher>
+
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Pronostico</IonTitle>
+            <IonTitle size="large">Pronósticos</IonTitle>
           </IonToolbar>
         </IonHeader>
-        {pronosticos &&
-          pronosticos.map((jornada, i) => (
-            <IonCard key={i}>
+
+        {pronosticos?.map((jornada) =>
+          jornada.pronosticos_det.map((pronostico) => (
+            <IonCard key={pronostico.idpronostico}>
               <IonCardHeader>
                 <IonCardTitle>{jornada.nombre}</IonCardTitle>
-
-              </IonCardHeader>
-              <IonCardContent>
-                {!jornada.espagado && (
-                  <div style={{ marginBottom: "16px" }}>
-                    <p>
-                      Tu referencia de pago es:{" "}
-                      <strong>{jornada.idpronostico}</strong>
-                    </p>
-                    <IonButton
-                      expand="block"
-                      color="primary"
-                      shape="round"
-                      className="ion-margin-top"
-                      onClick={() =>
-                        mostrarInstruccionesPago(jornada.idpronostico)
-                      }
-                    >
-                      Realizar pago
-                    </IonButton>
-                  </div>
+                {!pronostico.espagado && (
+                  <IonBadge color="danger" style={{ marginTop: "4px" }}>
+                    No pagado
+                  </IonBadge>
                 )}
+                <h2>pronostico: {pronostico.idpronostico} </h2>
+              </IonCardHeader>
+
+              <IonCardContent>
+                {!pronostico.espagado && (
+                  <IonButton
+                    expand="block"
+                    color="primary"
+                    shape="round"
+                    onClick={() =>
+                      mostrarInstruccionesPago(pronostico.idpronostico, pronostico.espagado)
+                    }
+                    className="ion-margin-bottom"
+                  >
+                    Realizar pago
+                  </IonButton>
+                )}
+
                 <IonList>
-                  {jornada.partidos.map((partido, j) => {
-                    const acerto = partido.pronostico === partido.resultado;
-                    const pendiente = partido.resultado.trim() === "";
-                    return (
-                      <IonItem key={j} color={acerto ? "success" : undefined}>
-                        <IonLabel>
-                          <h2 style={{ fontWeight: "600" }}>
-                            {partido.equipo_local} vs {partido.equipo_visitante}
-                          </h2>
-
-                          <p>
-                            Pronóstico:{" "}
-                            <IonBadge color="medium">
-                              {partido.pronostico}
-                            </IonBadge>
-                          </p>
-
-                          <p>
-                            Resultado:{" "}
-                            <IonBadge color="large">
-                              {pendiente ? "Pendiente" : partido.resultado}
-                            </IonBadge>
-                          </p>
-
-                          <p>
-                            {new Date(partido.fecha ?? "").toLocaleDateString(
-                              "es-MX",
-                              {
-                                weekday: "long", // día de la semana
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
-                          </p>
-                        </IonLabel>
-
-                        {/* Estado del partido */}
-                        {partido.status === "Started" ? (
-                          <div
-                            slot="end"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "6px",
-                            }}
-                          >
-                            <IonSpinner name="dots" />
-                            <IonLabel>En juego</IonLabel>
-                            <IonBadge color={acerto ? "success" : "danger"}>
-                              {acerto ? "✅" : "❌"}
-                            </IonBadge>
-                          </div>
-                        ) : (
-                          !pendiente && (
-                            <IonBadge
-                              slot="end"
-                              color={acerto ? "success" : "danger"}
-                            >
-                              {acerto ? "✅" : "❌"}
-                            </IonBadge>
-                          )
-                        )}
-                      </IonItem>
-                    );
-                  })}
+                  {pronostico.partidos.map((partido, j) => (
+                    <PartidoComponent key={j} partido={partido} />
+                  )
+                  //{
+                    // const acerto = partido.pronostico === partido.resultado;
+                    // const pendiente = partido.resultado.trim() === "";
+                    // return (
+                    //   <IonItem key={j} color={acerto ? "success" : undefined}>
+                    //     <IonLabel>
+                    //       <h2 style={{ fontWeight: "600" }}>
+                    //         {partido.equipo_local} vs {partido.equipo_visitante}
+                    //       </h2>
+                    //       <p>
+                    //         Pronóstico: <IonBadge color="medium">{partido.pronostico}</IonBadge>
+                    //       </p>
+                    //       <p>
+                    //         Resultado:{" "}
+                    //         <IonBadge color={pendiente ? "medium" : acerto ? "success" : "danger"}>
+                    //           {pendiente ? "Pendiente" : partido.resultado}
+                    //         </IonBadge>
+                    //       </p>
+                    //       <p>
+                    //         {partido.fecha
+                    //           ? new Date(partido.fecha).toLocaleDateString("es-MX", {
+                    //               weekday: "long",
+                    //               year: "numeric",
+                    //               month: "long",
+                    //               day: "numeric",
+                    //               hour: "2-digit",
+                    //               minute: "2-digit",
+                    //             })
+                    //           : "Fecha no disponible"}
+                    //       </p>
+                    //     </IonLabel>
+                    //     {/* Estado del partido */}
+                    //     {partido.status === "Started" ? (
+                    //       <div
+                    //         slot="end"
+                    //         style={{
+                    //           display: "flex",
+                    //           alignItems: "center",
+                    //           gap: "6px",
+                    //         }}
+                    //       >
+                    //         <IonSpinner name="dots" />
+                    //         <IonLabel>En juego</IonLabel>
+                    //         <IonBadge color={acerto ? "success" : "danger"}>
+                    //           {acerto ? "✅" : "❌"}
+                    //         </IonBadge>
+                    //       </div>
+                    //     ) : (
+                    //       !pendiente && (
+                    //         <IonBadge
+                    //           slot="end"
+                    //           color={acerto ? "success" : "danger"}
+                    //         >
+                    //           {acerto ? "✅" : "❌"}
+                    //         </IonBadge>
+                    //       )
+                    //     )}
+                    //   </IonItem>
+                    // );
+                  //}
+                  )}
                 </IonList>
               </IonCardContent>
             </IonCard>
-          ))}
+          ))
+        )}
+
         <ModalPago
           isOpen={showModal}
           idpronostico={id}
           onClose={() => setShowModal(false)}
         />
+
         <IonAlert
-                          isOpen={isOpenAlert}
-                          header="⚽ La jornada ya inició"
-                          message={`
-                          Lo sentimos, la jornada seleccionada ya ha iniciado y no puedes realizar el pago.
-                  `}
-                          buttons={[
-                            {
-                              text: "Aceptar",
-                              cssClass: "alert-button-confirm",
-                              handler: () => {
-                                setIsOpenAlert(false);
-                              },
-                            },
-                          ]}
-                          onDidDismiss={() => setIsOpenAlert(false)}
-                        />
+          isOpen={isOpenAlert}
+          header="⚽ Pago no disponible"
+          message={`Lo sentimos, el pronóstico seleccionado aún no está pagado.`}
+          buttons={[
+            {
+              text: "Aceptar",
+              cssClass: "alert-button-confirm",
+              handler: () => setIsOpenAlert(false),
+            },
+          ]}
+          onDidDismiss={() => setIsOpenAlert(false)}
+        />
       </IonContent>
     </IonPage>
   );

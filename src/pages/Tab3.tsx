@@ -1,5 +1,4 @@
 import {
-  IonBadge,
   IonButton,
   IonButtons,
   IonCard,
@@ -9,8 +8,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonItem,
-  IonLabel,
   IonList,
   IonPage,
   IonRefresher,
@@ -24,6 +21,7 @@ import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { logOutOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
+import PosicionComponent from "../components/positionComponent";
 
 const Tab3: React.FC = () => {
   const {
@@ -107,38 +105,39 @@ const Tab3: React.FC = () => {
           </IonCardHeader>
           <IonCardContent>
             <IonList>
-              {posiciones.map((usuario, index) => {
+              {posiciones.map((usuario, index) => (
+                <PosicionComponent key={index} usuario={usuario} index={index} />
                 //const esUsuarioLogueado = usuario.nombre === "Xime"; // Cambia "Xime" por el nombre del usuario logueado
-                return (
-                  <IonItem
-                    key={index}
-                    color={index + 1 == 1 ? "primary" : undefined}
-                  >
-                    <IonLabel>
-                      <h2>
-                        #{index + 1} - {usuario.nombre}
-                      </h2>
-                      <p>
-                        {" "}
-                        {usuario.pronosticos.map((p, i) => (
-                          <IonBadge
-                            key={i}
-                            color={p.acierto ? "success" : "medium"}
-                            style={{ marginRight: 4 }}
-                          >
-                            {p.pronostico}
-                          </IonBadge>
-                        ))}
-                      </p>
-                    </IonLabel>
+                // return (
+                //   <IonItem
+                //     key={index}
+                //     color={index + 1 == 1 ? "primary" : undefined}
+                //   >
+                //     <IonLabel>
+                //       <h2>
+                //         #{index + 1} - {usuario.nombre}
+                //       </h2>
+                //       <p>
+                //         {" "}
+                //         {usuario.pronosticos.map((p, i) => (
+                //           <IonBadge
+                //             key={i}
+                //             color={p.acierto ? "success" : "medium"}
+                //             style={{ marginRight: 4 }}
+                //           >
+                //             {p.pronostico}
+                //           </IonBadge>
+                //         ))}
+                //       </p>
+                //     </IonLabel>
 
-                    {/* Número de aciertos al final */}
-                    <IonBadge slot="end" color="success">
-                      {usuario.aciertos}
-                    </IonBadge>
-                  </IonItem>
-                );
-              })}
+                //     {/* Número de aciertos al final */}
+                //     <IonBadge slot="end" color="success">
+                //       {usuario.aciertos}
+                //     </IonBadge>
+                //   </IonItem>
+                // );
+              ))}
             </IonList>
           </IonCardContent>
         </IonCard>

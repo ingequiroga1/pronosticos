@@ -6,14 +6,43 @@ import { PetPronostico } from "../types/pronosticos";
 import { enviarPronostico, getPronosticosJornada, getPronXUsuario } from "../api/pronosticos";
 
 
-
-
 export type Jornada = {
   idjornada: number;
   nombre: string;
   fecha_inicio: string;
   fecha_fin: string;
   status: "Open" | "Closed";
+};
+
+type pronosticoPartido = {
+  equipo_local: string;
+  equipo_visitante: string;
+  pronostico: "L" | "E" | "V";
+  resultado: "L" | "E" | "V"| " ";
+  acertado: boolean;
+  fecha?: string;
+  status?: "Open" | "Closed" | "Started";
+};
+
+type PronosticoDet = {
+  auth_user_id: string;
+  espagado: boolean;
+  idpronostico: number;
+  partidos: pronosticoPartido[];
+}
+
+type pronUsuarioActual = {
+  nombre: string;
+  fecha_inicio?: string;
+  pronosticos_det: PronosticoDet[];
+  espagado: boolean;
+};
+
+type pronosticoUsuario = {
+  nombre: string;
+  pronosticos: {pronostico: string, acierto: boolean}[];
+  aciertos: number;
+  vecescampeon: number;
 };
 
 export type Partido = {
@@ -33,7 +62,7 @@ export type Usuario = {
 type AuthContextType = {
   usuario: Usuario | null;
   jornadas: Jornada[];
-  pronosticos?: pronostico[];
+  pronosticos?: pronUsuarioActual[];
   idJornadaActual?: number;
   partidosxjornada?: Partido[];
   pronosticosConAciertos?: pronosticoUsuario[];
@@ -43,42 +72,14 @@ type AuthContextType = {
   fetchJornadas: () => Promise<void>;
   fetchpartidosxjornada: (idJornada: number) => Promise<void>;
   guardarPronostico: (pronostico: PetPronostico) => Promise<void>;
-  fetchPronXUsuario: () => Promise<pronostico[] | undefined>;
+  fetchPronXUsuario: () => Promise<pronUsuarioActual[] | undefined>;
   fetchPronXJornada: () => Promise<void>;
 };
-
-type pronosticoPartido = {
-  equipo_local: string;
-  equipo_visitante: string;
-  pronostico: "L" | "E" | "V";
-  resultado: "L" | "E" | "V"| " ";
-  acertado: boolean;
-  fecha?: string;
-  status?: "Open" | "Closed" | "Started";
-};
-
-type pronostico = {
-  nombre: string;
-  fecha_inicio?: string;
-  idpronostico: number;
-  espagado: boolean;
-  partidos: pronosticoPartido[];
-};
-
-type pronosticoUsuario = {
-  nombre: string;
-  pronosticos: {pronostico: string, acierto: boolean}[];
-  aciertos: number;
-};
-
-
-
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
  
-
 
   const [usuario, setUser] = useState<Usuario | null>(null);
   const [jornadas, setJornadas] = useState<Jornada[]>([]);
@@ -87,7 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
   const [partidosxjornada, setPartidosxjornada] = useState<Partido[]>([]);
 
-  const [pronosticos,setPronosticos] = useState<pronostico[]>([]);
+  const [pronosticos,setPronosticos] = useState<pronUsuarioActual[]>([]);
 
   const [pronosticosConAciertos,setPronosticosConAciertos] = useState<pronosticoUsuario[]>([]);
 
@@ -132,8 +133,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const guardarPronostico = async (pronostico: PetPronostico) => {
-    const result = await enviarPronostico(pronostico); 
-    
+    const result = await enviarPronostico(pronostico);  
     if (result) {
       console.log("Pronóstico guardado:");
     } else {
@@ -144,9 +144,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchPronXUsuario = async () => {
     if (usuario?.id !== undefined) {
       const data = await getPronXUsuario(usuario.id);
+      console.log("Pronósticos del usuario:", data);
       setPronosticos([data]);
       return [data];
-      //console.log("Pronósticos del usuario:", data);
+      
     } else {
       console.error("Usuario o idJornadaActual no definido");
     }
@@ -155,7 +156,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchPronXJornada = async () => {
       const data = await getPronosticosJornada();
       setPronosticosConAciertos(data);
-      //console.log("Pronósticos con aciertos:", data);
+      console.log("Pronósticos con aciertos:", data);
   }
 
 
