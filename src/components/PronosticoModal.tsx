@@ -50,7 +50,6 @@ const PronosticoModal: React.FC<PronosticoModalProps> = ({
   };
 
   const handleCerrar = () => {
-    console.log("Pronósticos guardados:", pronosticos);
     onClose();
   };
 

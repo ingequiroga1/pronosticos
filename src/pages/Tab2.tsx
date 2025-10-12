@@ -57,8 +57,11 @@ const Tab2: React.FC = () => {
     (event.target as HTMLIonRefresherElement).complete();
   };
 
-  const mostrarInstruccionesPago = (idpronostico: number, espagado: boolean) => {
-    if (espagado) {
+  const mostrarInstruccionesPago = (idpronostico: number, fecha_inicio: string) => {
+    const fechaInicio = new Date(fecha_inicio);
+    const fechaActual = new Date();
+
+    if (fechaInicio > fechaActual) {
       setId(idpronostico);
       setShowModal(true);
       return;
@@ -99,6 +102,7 @@ const Tab2: React.FC = () => {
         </IonHeader>
 
         {pronosticos?.map((jornada) =>
+          
           jornada.pronosticos_det.map((pronostico) => (
             <IonCard key={pronostico.idpronostico}>
               <IonCardHeader>
@@ -118,7 +122,10 @@ const Tab2: React.FC = () => {
                     color="primary"
                     shape="round"
                     onClick={() =>
-                      mostrarInstruccionesPago(pronostico.idpronostico, pronostico.espagado)
+                      mostrarInstruccionesPago(
+                        pronostico.idpronostico,
+                        jornada.fecha_inicio ?? ""
+                      )
                     }
                     className="ion-margin-bottom"
                   >
@@ -206,7 +213,7 @@ const Tab2: React.FC = () => {
         <IonAlert
           isOpen={isOpenAlert}
           header="⚽ Pago no disponible"
-          message={`Lo sentimos, el pronóstico seleccionado aún no está pagado.`}
+          message={`Lo sentimos, finalizo el periodo de pago.`}
           buttons={[
             {
               text: "Aceptar",

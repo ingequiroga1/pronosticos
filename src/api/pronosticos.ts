@@ -148,8 +148,6 @@ const result = data.flatMap((jor) =>
     espagado: result[0]?.espagado || false,
     pronosticos_det: result,
   };
-
-  console.log("pronostico",pronostico);
   return pronostico;
 }
 
@@ -162,7 +160,6 @@ const { data, error } = await supabase
     console.error("Error obteniendo pronosticos:", error.message);
     throw error;
   }
-  console.log("data",data);
   return data;
 }
 

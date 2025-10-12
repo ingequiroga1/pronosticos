@@ -66,7 +66,7 @@ const Tab1: React.FC = () => {
 
   const handleLogout = async () => {
     logout();
-    history.replace("/login"); // 👈 aquí rediriges
+    history.replace("/login"); 
   };
 
   return (
