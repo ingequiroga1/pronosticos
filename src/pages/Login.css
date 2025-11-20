@@ -47,3 +47,65 @@
   width: 20px;
   height: 20px;
 }
+
+
+/* Fondo con imagen del estadio */
+.login-background {
+  --background: none;
+  background-image: url("/assets/images/stadium-bg.png"); /* tu imagen de estadio */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Contenedor central */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+  backdrop-filter: brightness(0.9);
+}
+
+/* Logo */
+.app-logo {
+  margin-bottom: 20px;
+}
+
+/* Leyenda descriptiva */
+.app-description {
+  font-size: 1.1rem;
+  color: #ffffff;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+  margin-bottom: 40px;
+  max-width: 300px;
+}
+
+/* Botón de Google */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border: none;
+  color: #444;
+  border-radius: 30px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  gap: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.google-btn:hover {
+  background-color: #357ae8;
+}
+
+.google-icon {
+  width: 24px;
+  height: 24px;
+}
+

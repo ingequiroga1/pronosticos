@@ -24,6 +24,8 @@ import PronosticoModal from "../components/PronosticoModal";
 import ModalReglas from "../components/modalReglas";
 import { addCircleOutline, logOutOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
+import { addReferido } from "../api/auth";
+import InviteFriendsModal from "../components/InviteFriendsModal";
 
 const Tab1: React.FC = () => {
   const { usuario, jornadas, logout, fetchJornadas, fetchpartidosxjornada } =
@@ -31,12 +33,19 @@ const Tab1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reglasOpen, setReglasOpen] = useState(false);
   const [isOpenAlert, setIsOpenAlert] = useState(false);
+  const [invitarOpen, setInvitarOpen] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
     async function fetchData() {
       try {
         fetchJornadas();
+        const referido = localStorage.getItem("referido_por");
+     
+        if (referido && usuario?.id) {
+          localStorage.removeItem("referido_por");
+          await addReferido(referido, usuario.id);
+        }
       } catch (err) {
         console.error("No se pudieron cargar las jornadas:", err);
       }
@@ -62,6 +71,10 @@ const Tab1: React.FC = () => {
 
   const mostrarReglas = () => {
     setReglasOpen(true);
+  };
+
+  const invitarAmigo = () => {  
+    setInvitarOpen(true);
   };
 
   const handleLogout = async () => {
@@ -146,6 +159,14 @@ const Tab1: React.FC = () => {
             >
               Reglas de la jornada
             </IonButton>
+             <IonButton
+              expand="block"
+              shape="round"
+              className="ion-margin-top custom-boton"
+              onClick={invitarAmigo}
+            >
+              Invitar a un amigo
+            </IonButton>
           </IonCardContent>
         </IonCard>
         <PronosticoModal
@@ -153,6 +174,11 @@ const Tab1: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
         />
         <ModalReglas isOpen={reglasOpen} onClose={() => setReglasOpen(false)} />
+        <InviteFriendsModal
+          isOpen={invitarOpen}
+          onClose={() => setInvitarOpen(false)}
+          nombre={usuario?.nombre || ""}
+        />
         <IonAlert
           isOpen={isOpenAlert}
           header="⚽ La jornada ya inició"
