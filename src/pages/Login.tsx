@@ -38,7 +38,7 @@ const Login: React.FC = () => {
 
           {/* Leyenda descriptiva */}
           <p className="app-description">
-            Participa con solo $20 <br /> y llévate el gran premio en <br /> efectivo de la jornada.
+            Participa con solo $25 <br /> y llévate el gran premio en <br /> efectivo de la jornada.
           </p>
 
           {/* Botón */}

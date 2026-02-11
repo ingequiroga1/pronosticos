@@ -40,7 +40,7 @@ const ModalReglas: React.FC<ModalReglasProps> = ({ isOpen, onClose }) => {
                 <IonLabel className="ion-text-wrap">
                   <h3>1. Cuota de participación</h3>
                   <IonText color="medium">
-                    La participación tiene un costo de <strong>$20 MXN</strong>.
+                    La participación tiene un costo de <strong>$25 MXN</strong>.
                     Una vez pagado, no hay cancelaciones ni reembolsos.
                   </IonText>
                 </IonLabel>
@@ -60,7 +60,7 @@ const ModalReglas: React.FC<ModalReglasProps> = ({ isOpen, onClose }) => {
                 <IonLabel className="ion-text-wrap">
                   <h3>3. Bolsa de premios</h3>
                   <IonText color="medium">
-                    El 75% de la recaudación se destina al premio y el 25% al
+                    El 80% de la recaudación se destina al premio y el 20% al
                     mantenimiento de la app. 
                   </IonText>
                 </IonLabel>
